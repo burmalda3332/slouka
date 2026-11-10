@@ -16,9 +16,13 @@ Open the site and start typing. On a phone, add it to your home screen (Chrome: 
 
 ## Слоўнік / Dictionary
 
-Праверка слоў выкарыстоўвае беларускі слоўнік правапісу hunspell-be (© Мікалай Удодаў, 2010–2019), ліцэнзія CC BY-SA 3.0. Файл `slounik.txt` створаны з гэтага слоўніка і распаўсюджваецца на тых жа ўмовах.
+Праверка слоў выкарыстоўвае два адкрытыя слоўнікі:
+- слоўнік праверкі правапісу паводле Граматычнай базы Беларускага N-корпуса (https://bnkorpus.info), аўтары Сымон Какора, Алесь Булойчык, Уладзь Кошчанка, ліцэнзія CC BY-SA 4.0;
+- hunspell-be (© Мікалай Удодаў, 2010–2019), ліцэнзія CC BY-SA 3.0.
 
-Word checking uses the Belarusian hunspell spelling dictionary hunspell-be (© Mikalai Udodau, 2010–2019), licensed under CC BY-SA 3.0. The file `slounik.txt` is derived from it and is shared under the same license.
+Файл `slounik.txt` створаны з гэтых слоўнікаў і распаўсюджваецца па ліцэнзіі CC BY-SA 4.0.
+
+Word checking uses two open dictionaries: the spelling dictionary built from the Belarusian N-korpus Grammar Database (https://bnkorpus.info) by Symon Kakora, Aleś Bułojčyk and Uladź Koščanka (CC BY-SA 4.0), and hunspell-be by Mikalai Udodau (CC BY-SA 3.0). The file `slounik.txt` is derived from them and is shared under CC BY-SA 4.0.
 
 ## Файлы / Files
 

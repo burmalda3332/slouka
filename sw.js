@@ -1,5 +1,5 @@
 // Спачатку бярэм свежую версію з сеткі, кэш — толькі калі няма інтэрнэту
-const CACHE = "slouka-v5";
+const CACHE = "slouka-v6";
 const FILES = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "slounik.txt"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(FILES.map(f =>

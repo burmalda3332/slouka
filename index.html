@@ -101,6 +101,7 @@
   <p class="small">Каб выправіць любую літару, націсні на яе клетку або выкарыстай стрэлкі ← →. Літары можна ўпісваць у любым парадку.</p>
   <p class="small">Падказка: на рускай раскладцы «и» становіцца «і», а «щ» — «ў».</p>
   <button class="btn" data-close>Гуляць</button>
+  <p class="small" style="text-align:center;margin-bottom:0">Версія 1.2 · слоўнік 831 слова</p>
 </div></div>
 
 <div class="modal" id="stats"><div class="card">
@@ -311,7 +312,7 @@ addEventListener("resize", () => { layout(); drawGrid(); });
 bar(); start();
 if (!store.get("seenHelp", false)) { $("help").classList.add("open"); store.set("seenHelp", true); }
 if ("serviceWorker" in navigator && location.protocol === "https:") {
-  try { navigator.serviceWorker.register("sw.js").catch(() => {}); } catch(e) {}
+  try { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(r => r.update()).catch(() => {}); } catch(e) {}
 }
 </script>
 </body>

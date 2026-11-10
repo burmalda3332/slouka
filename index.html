@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="be">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#b3261e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Слоўка">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Слоўка — беларускі вордл</title>
+<style>
+  :root{--red:#b3261e;--ink:#2a2220;--muted:#6f6461;--paper:#fbf7f1;--line:#e2d6ca;
+    --g:#1f7a45;--y:#d4a017;--n:#7a716e;--key:#e9e1d8;color-scheme:light}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--paper);color:var(--ink);
+    display:flex;flex-direction:column;align-items:center;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    height:100dvh;overflow:hidden;touch-action:manipulation;user-select:none}
+  button{font:inherit;color:inherit;cursor:pointer}
+  header{width:100%;max-width:520px;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+  header h1{margin:0;font-family:Georgia,"PT Serif",serif;font-size:1.6rem;color:var(--red);letter-spacing:.5px}
+  .ib{background:none;border:0;width:40px;height:40px;border-radius:10px;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .ib:active{background:var(--key)}
+  .bar{width:100%;max-width:520px;display:flex;gap:4px;justify-content:center;flex-wrap:nowrap;padding:10px 6px 0}
+  .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:5px 9px;font-size:.8rem;font-weight:600;white-space:nowrap}
+  .chip.n{min-width:30px;padding:5px 0}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+  .sep{width:1px;background:var(--line);margin:0 2px}
+  .msg{height:28px;line-height:28px;font-weight:700;text-align:center;font-size:.95rem;padding:0 10px}
+  .board{flex:1;display:flex;align-items:center;justify-content:center;width:100%;min-height:0;padding:0 8px}
+  .grid{display:grid;grid-template-rows:repeat(6,1fr);gap:6px}
+  .row{display:grid;gap:6px}
+  .tile{border:2px solid var(--line);border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;
+    font-family:Georgia,"PT Serif",serif;font-weight:700;text-transform:uppercase;color:var(--ink)}
+  .tile.fill{border-color:#a99;animation:pop .1s}
+  .tile.g,.tile.y,.tile.n{color:#fff;animation:flip .45s ease both}
+  .tile.g{background:var(--g);border-color:var(--g)}.tile.y{background:var(--y);border-color:var(--y)}.tile.n{background:var(--n);border-color:var(--n)}
+  @keyframes pop{50%{transform:scale(1.08)}}
+  @keyframes flip{0%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+  .shake{animation:sh .35s}
+  @keyframes sh{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .kb{width:100%;max-width:520px;padding:6px 4px 10px;display:flex;flex-direction:column;gap:6px}
+  .kb div{display:flex;gap:4px;justify-content:center}
+  .key{flex:1;max-width:44px;height:54px;border:0;border-radius:6px;background:var(--key);font-weight:700;font-size:1.05rem;text-transform:uppercase;padding:0}
+  .key.wide{max-width:72px;flex:1.6;font-size:.66rem}
+  .key:active{filter:brightness(.9)}
+  .key.g{background:var(--g);color:#fff}.key.y{background:var(--y);color:#fff}.key.n{background:var(--n);color:#fff}
+  .modal{position:fixed;inset:0;background:rgba(30,20,18,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+  .modal.open{display:flex}
+  .card{background:#fff;border-radius:16px;max-width:420px;width:100%;max-height:90dvh;overflow:auto;padding:22px;position:relative}
+  .card h2{margin:0 0 12px;font-family:Georgia,"PT Serif",serif;color:var(--red)}
+  .card .x{position:absolute;top:10px;right:10px}
+  .ex{display:flex;gap:4px;margin:8px 0}
+  .ex .tile{width:34px;height:34px;font-size:1.1rem;animation:none}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;gap:6px;margin-bottom:16px}
+  .stats b{display:block;font-size:1.7rem}
+  .stats span{font-size:.75rem;color:var(--muted)}
+  .dist div{display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.85rem}
+  .dist i{display:block;background:var(--n);color:#fff;font-style:normal;padding:1px 6px;border-radius:4px;min-width:22px;text-align:right}
+  .dist i.cur{background:var(--g)}
+  .btn{background:var(--red);color:#fff;border:0;border-radius:10px;padding:12px 18px;font-weight:700;width:100%;margin-top:10px}
+  .btn.ghost{background:#fff;color:var(--red);border:1.5px solid var(--red)}
+  .answer{background:var(--paper);border-radius:12px;padding:12px;margin-bottom:14px;text-align:center}
+  .answer b{font-family:Georgia,serif;font-size:1.6rem;color:var(--red);text-transform:uppercase;letter-spacing:2px;display:block}
+  .small{color:var(--muted);font-size:.85rem}
+  .toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <button class="ib" id="helpBtn" aria-label="Правілы">?</button>
+  <h1>Слоўка</h1>
+  <button class="ib" id="statsBtn" aria-label="Статыстыка">📊</button>
+</header>
+<div class="bar" id="bar"></div>
+<div class="msg" id="msg"></div>
+<div class="board" id="board"><div class="grid" id="grid"></div></div>
+<div class="kb" id="kb"></div>
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="help"><div class="card">
+  <button class="ib x" data-close>✕</button>
+  <h2>Як гуляць</h2>
+  <p>Адгадай беларускае слова за 6 спроб. Пасля кожнай спробы літары мяняюць колер:</p>
+  <div class="ex"><div class="tile g">б</div><div class="tile">у</div><div class="tile">с</div><div class="tile">е</div><div class="tile">л</div></div>
+  <p class="small">Зялёная — літара ёсць і стаіць на сваім месцы.</p>
+  <div class="ex"><div class="tile">х</div><div class="tile y">а</div><div class="tile">т</div><div class="tile">а</div></div>
+  <p class="small">Жоўтая — літара ёсць у слове, але ў іншым месцы.</p>
+  <div class="ex"><div class="tile">м</div><div class="tile">о</div><div class="tile n">в</div><div class="tile">а</div></div>
+  <p class="small">Шэрая — такой літары ў слове няма.</p>
+  <p><b>Слова дня</b> — адно слова для ўсіх на суткі. <b>Бясконца</b> — новае слова пасля кожнай гульні. Даўжыню слова (4–7 літар) выбірай уверсе.</p>
+  <p class="small">Падказка: на рускай раскладцы «и» становіцца «і», а «щ» — «ў».</p>
+  <button class="btn" data-close>Гуляць</button>
+</div></div>
+
+<div class="modal" id="stats"><div class="card">
+  <button class="ib x" data-close>✕</button>
+  <div id="answerBox"></div>
+  <h2>Статыстыка</h2>
+  <div class="stats" id="statNums"></div>
+  <div class="small" style="margin-bottom:4px">Колькі спроб спатрэбілася</div>
+  <div class="dist" id="dist"></div>
+  <div id="endBtns"></div>
+</div></div>
+
+<script>
+const WORDS = {"4": {"неба": "небо", "снег": "снег", "іней": "иней", "раса": "роса", "град": "град", "гром": "гром", "бура": "буря", "зара": "заря", "мора": "море", "рака": "река", "гара": "гора", "поле": "поле", "ніва": "нива", "ліпа": "липа", "клён": "клён", "ёлка": "ёлка", "ружа": "роза", "ліст": "лист; письмо", "вада": "вода", "жыта": "рожь", "цмок": "дракон", "зубр": "зубр", "воўк": "волк", "ліса": "лиса", "заяц": "заяц", "лось": "лось", "бобр": "бобр", "рысь": "рысь", "крот": "крот", "сава": "сова", "арол": "орёл", "гусь": "гусь", "каза": "коза", "конь": "конь", "слон": "слон", "рыба": "рыба", "жаба": "лягушка", "хлеб": "хлеб", "сала": "сало", "мяса": "мясо", "соль": "соль", "мука": "мука", "каша": "каша", "яйка": "яйцо", "арэх": "орех", "грыб": "гриб", "блін": "блин", "квас": "квас", "юшка": "похлёбка, уха", "кава": "кофе", "абед": "обед", "хата": "дом, хата", "акно": "окно", "двор": "двор", "плот": "забор", "шафа": "шкаф", "стол": "стол", "лава": "скамья", "ключ": "ключ", "мыла": "мыло", "мроя": "мечта, грёза", "маці": "мать", "мама": "мама", "тата": "папа", "брат": "брат", "дзед": "дед", "душа": "душа", "твар": "лицо", "вока": "глаз", "вуха": "ухо", "рука": "рука", "нага": "нога", "смех": "смех", "мара": "мечта", "вера": "вера", "гнеў": "гнев", "сяло": "село", "парк": "парк", "мост": "мост", "шлях": "путь", "мова": "язык", "верш": "стихотворение", "клас": "класс", "урок": "урок", "лета": "лето", "зіма": "зима", "люты": "февраль", "край": "край", "спеў": "пение", "крок": "шаг", "след": "след", "лыжы": "лыжи"}, "5": {"сонца": "солнце", "зорка": "звезда", "хмара": "туча", "вецер": "ветер", "дождж": "дождь", "мароз": "мороз", "туман": "туман", "завея": "метель", "поўня": "полнолуние", "рэчка": "речка", "хваля": "волна", "бераг": "берег", "пушча": "пуща, густой лес", "дрэва": "дерево", "сасна": "сосна", "вярба": "ива", "трава": "трава", "лісце": "листва", "зямля": "земля", "агонь": "огонь", "бусел": "аист", "алень": "олень", "вожык": "ёж", "пацук": "крыса", "сокал": "сокол", "голуб": "голубь", "качка": "утка", "індык": "индюк", "котка": "кошка", "акунь": "окунь", "акула": "акула", "пчала": "пчела", "камар": "комар", "кавун": "арбуз", "масла": "масло", "кефір": "кефир", "цукар": "сахар", "бурак": "свёкла", "гарох": "горох", "перац": "перец", "яблык": "яблоко", "груша": "груша", "сліва": "слива", "вішня": "вишня", "ажына": "ежевика", "пірог": "пирог", "гузік": "пуговица", "абцас": "каблук", "шалік": "шарф", "цацка": "игрушка", "абрус": "скатерть", "столь": "потолок", "сцяна": "стена", "кухня": "кухня", "пакой": "комната", "ганак": "крыльцо", "ложак": "кровать", "дыван": "ковёр", "лямпа": "лампа", "замок": "замок", "лыжка": "ложка", "кубак": "кружка", "сукня": "платье", "штаны": "брюки", "шапка": "шапка", "шчыры": "искренний", "імпэт": "порыв, воодушевление", "сябар": "друг", "дачка": "дочь", "цётка": "тётя", "жонка": "жена", "госць": "гость", "дзіця": "ребёнок", "сэрца": "сердце", "розум": "ум", "вусны": "губы", "плячо": "плечо", "палец": "палец", "спіна": "спина", "слёзы": "слёзы", "страх": "страх", "сорам": "стыд", "думка": "мысль", "жыццё": "жизнь", "праца": "работа", "крама": "магазин", "горад": "город", "рынак": "рынок", "тэатр": "театр", "музей": "музей", "пошта": "почта", "метро": "метро", "ровар": "велосипед", "лодка": "лодка", "слова": "слово", "лічба": "цифра", "тэкст": "текст", "песня": "песня", "казка": "сказка", "кніга": "книга", "школа": "школа", "ручка": "ручка", "гумка": "ластик", "ранец": "ранец", "дошка": "доска", "дзень": "день", "ранак": "утро", "вечар": "вечер", "месяц": "месяц; луна", "вясна": "весна", "скарб": "сокровище", "свята": "праздник"}, "6": {"возера": "озеро", "балота": "болото", "ельнік": "ельник", "бяроза": "берёза", "каліна": "калина", "рабіна": "рябина", "кветка": "цветок", "матыль": "бабочка", "зязюля": "кукушка", "барсук": "барсук", "сарока": "сорока", "варона": "ворона", "дзяцел": "дятел", "сініца": "синица", "певень": "петух", "курыца": "курица", "карова": "корова", "авечка": "овца", "свіння": "свинья", "сабака": "собака", "шчупак": "щука", "карась": "карась", "суніцы": "земляника", "агрэст": "крыжовник", "бульба": "картофель", "тварог": "творог", "малако": "молоко", "морква": "морковь", "цыбуля": "лук", "часнок": "чеснок", "фасоля": "фасоль", "агурок": "огурец", "маліна": "малина", "клёцкі": "клёцки", "кісель": "кисель", "вячэра": "ужин", "ручнік": "полотенце, рушник", "дзверы": "дверь", "агарод": "огород", "вароты": "ворота", "студня": "колодец", "крэсла": "кресло", "канапа": "диван", "коўдра": "одеяло", "свечка": "свеча", "кашуля": "рубашка", "паліто": "пальто", "куртка": "куртка", "бацька": "отец", "сястра": "сестра", "бабуля": "бабушка", "хлопец": "парень", "валасы": "волосы", "калена": "колено", "галава": "голова", "шчасце": "счастье", "смутак": "печаль", "надзея": "надежда", "спакой": "покой", "цішыня": "тишина", "памяць": "память", "цягнік": "поезд", "вуліца": "улица", "плошча": "площадь", "аптэка": "аптека", "вакзал": "вокзал", "дарога": "дорога", "машына": "машина", "сшытак": "тетрадь", "літара": "буква", "аловак": "карандаш", "крэйда": "мел", "вучань": "ученик", "задача": "задача", "раніца": "утро", "восень": "осень", "серада": "среда", "чацвер": "четверг", "субота": "суббота", "ліпень": "июль", "гульня": "игра", "кірмаш": "ярмарка"}, "7": {"вясёлка": "радуга", "востраў": "остров", "пагорак": "холм", "дубрава": "дубрава", "крыніца": "родник", "вавёрка": "белка", "пачвара": "чудовище", "крумкач": "ворон", "салавей": "соловей", "верабей": "воробей", "лебедзь": "лебедь", "мурашка": "муравей", "смятана": "сметана", "капуста": "капуста", "памідор": "помидор", "чарніцы": "черника", "дранікі": "драники", "мачанка": "мачанка", "гарбата": "чай", "парасон": "зонт", "лецішча": "дача", "насоўка": "носовой платок", "падлога": "пол", "лесвіца": "лестница", "падушка": "подушка", "фіранка": "занавеска", "відэлец": "вилка", "талерка": "тарелка", "каханне": "любовь", "цікаўны": "любопытный", "дзядуля": "дедушка", "усмешка": "улыбка", "абдымкі": "объятия", "радасць": "радость", "размова": "разговор", "аўтобус": "автобус", "трамвай": "трамвай", "самалёт": "самолёт", "ветразь": "парус", "лінейка": "линейка", "студэнт": "студент", "экзамен": "экзамен", "адзнака": "оценка", "тыдзень": "неделя", "гадзіна": "час", "хвіліна": "минута", "аўторак": "вторник", "пятніца": "пятница", "нядзеля": "воскресенье", "сакавік": "март", "чэрвень": "июнь", "жнівень": "август", "снежань": "декабрь", "вяселле": "свадьба"}};
+const ROWS = [["й","ц","у","к","е","н","г","ш","ў","з","х"],["ф","ы","в","а","п","р","о","л","д","ж","э"],["ENTER","я","ч","с","м","і","т","ь","б","ю","ё","⌫"]];
+const MAP = {"и":"і","щ":"ў","i":"і","ъ":"'"};
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try { const v = localStorage.getItem("slouka-" + k); return v == null ? d : JSON.parse(v); } catch(e) { return d; } },
+  set(k, v){ try { localStorage.setItem("slouka-" + k, JSON.stringify(v)); } catch(e) {} }
+};
+let len = store.get("len", 5), mode = store.get("mode", "day");
+if (!WORDS[len]) len = 5;
+let target, rows, cur, over, keyState, gameKey;
+
+const dayIndex = () => { const d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); };
+function dailyWord(n){
+  const list = Object.keys(WORDS[n]).sort();
+  const h = (dayIndex() * 2654435761 + n * 97) >>> 0;
+  return list[h % list.length];
+}
+function randomWord(n, avoid){
+  const list = Object.keys(WORDS[n]); let w;
+  do { w = list[Math.floor(Math.random() * list.length)]; } while (list.length > 1 && w === avoid);
+  return w;
+}
+
+function bar(){
+  const b = $("bar"); b.innerHTML = "";
+  [["day","Слова дня"],["free","Бясконца"]].forEach(([m, t]) => {
+    const c = document.createElement("button"); c.className = "chip" + (m === mode ? " on" : ""); c.textContent = t;
+    c.onclick = () => { mode = m; store.set("mode", m); bar(); start(); }; b.appendChild(c);
+  });
+  const s = document.createElement("div"); s.className = "sep"; b.appendChild(s);
+  [4,5,6,7].forEach(n => {
+    const c = document.createElement("button"); c.className = "chip n" + (n === len ? " on" : ""); c.textContent = n;
+    c.onclick = () => { len = n; store.set("len", n); bar(); start(); }; b.appendChild(c);
+  });
+}
+
+function start(){
+  keyState = {}; cur = ""; over = false; rows = [];
+  if (mode === "day"){
+    gameKey = `day-${dayIndex()}-${len}`;
+    target = dailyWord(len);
+    const saved = store.get(gameKey, null);
+    if (saved && saved.target === target){ saved.rows.forEach(r => { rows.push(r); updateKeys(r); }); over = saved.over; }
+  } else {
+    gameKey = `free-${len}`;
+    const saved = store.get(gameKey, null);
+    if (saved && !saved.over && WORDS[len][saved.target]){ target = saved.target; saved.rows.forEach(r => { rows.push(r); updateKeys(r); }); }
+    else target = randomWord(len, saved && saved.target);
+  }
+  msg(""); layout(); drawGrid(); drawKb();
+  if (over) setTimeout(showStats, 300);
+}
+function save(){ store.set(gameKey, { target, rows, over }); }
+
+function judge(g){
+  const res = Array(len).fill("n"), t = [...target], gl = [...g];
+  gl.forEach((c,i) => { if (c === t[i]) { res[i] = "g"; t[i] = null; } });
+  gl.forEach((c,i) => { if (res[i] !== "g") { const j = t.indexOf(c); if (j > -1) { res[i] = "y"; t[j] = null; } } });
+  return res;
+}
+function updateKeys(r){
+  const rank = {g:3,y:2,n:1};
+  [...r.w].forEach((c,i) => { if (!keyState[c] || rank[r.s[i]] > rank[keyState[c]]) keyState[c] = r.s[i]; });
+}
+
+function layout(){
+  const bd = $("board").getBoundingClientRect();
+  const gap = 6, sz = Math.floor(Math.min((bd.width - 16 - gap*(len-1)) / len, (bd.height - 8 - gap*5) / 6, 62));
+  const g = $("grid");
+  g.style.setProperty("--sz", sz + "px");
+  g.dataset.sz = sz;
+}
+function drawGrid(shakeRow, flipRow){
+  const g = $("grid"), sz = +g.dataset.sz || 50; g.innerHTML = "";
+  for (let r = 0; r < 6; r++){
+    const row = document.createElement("div"); row.className = "row";
+    row.style.gridTemplateColumns = `repeat(${len}, ${sz}px)`;
+    if (r === shakeRow) row.classList.add("shake");
+    const done = rows[r]; const letters = done ? [...done.w] : (r === rows.length ? [...cur] : []);
+    for (let i = 0; i < len; i++){
+      const d = document.createElement("div"); d.className = "tile";
+      d.style.height = sz + "px"; d.style.fontSize = Math.round(sz * .52) + "px";
+      if (letters[i]) { d.textContent = letters[i]; d.classList.add("fill"); }
+      if (done) { d.classList.add(done.s[i]); if (r === flipRow) d.style.animationDelay = (i * 0.12) + "s"; else d.style.animation = "none"; }
+      row.appendChild(d);
+    }
+    g.appendChild(row);
+  }
+}
+function drawKb(){
+  const kb = $("kb"); kb.innerHTML = "";
+  ROWS.forEach(r => {
+    const d = document.createElement("div");
+    r.forEach(k => {
+      const b = document.createElement("button"); b.className = "key";
+      if (k === "ENTER") { b.textContent = "Праверыць"; b.classList.add("wide"); }
+      else if (k === "⌫") { b.textContent = "⌫"; b.classList.add("wide"); b.setAttribute("aria-label","Сцерці"); }
+      else { b.textContent = k; if (keyState[k]) b.classList.add(keyState[k]); }
+      b.onclick = () => press(k);
+      d.appendChild(b);
+    });
+    kb.appendChild(d);
+  });
+}
+function msg(t, c){ const m = $("msg"); m.textContent = t; m.style.color = c || "var(--ink)"; }
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1600); }
+
+function press(k){
+  if (over) { if (k === "ENTER") showStats(); return; }
+  if (k === "⌫") { cur = [...cur].slice(0,-1).join(""); drawGrid(); return; }
+  if (k === "ENTER") {
+    if ([...cur].length < len) { toast("Не хапае літар"); drawGrid(rows.length); return; }
+    const r = { w: cur, s: judge(cur) }; rows.push(r); updateKeys(r);
+    const won = cur === target; cur = "";
+    if (won || rows.length === 6) { over = true; record(won); }
+    save(); drawGrid(undefined, rows.length - 1);
+    setTimeout(drawKb, len * 120 + 300);
+    if (won) setTimeout(() => { toast(["Геніяльна!","Цудоўна!","Выдатна!","Малайчына!","Добра!","Уф, атрымалася!"][rows.length-1]); }, len*120+400);
+    if (over) setTimeout(showStats, len * 120 + 1400);
+    return;
+  }
+  if ([...cur].length < len) { cur += k; drawGrid(); }
+}
+
+function statsKey(){ return `stats-${len}`; }
+function record(won){
+  const st = store.get(statsKey(), { played:0, wins:0, streak:0, best:0, dist:[0,0,0,0,0,0] });
+  st.played++;
+  if (won){ st.wins++; st.streak++; st.best = Math.max(st.best, st.streak); st.dist[rows.length-1]++; }
+  else st.streak = 0;
+  store.set(statsKey(), st);
+}
+function showStats(){
+  const st = store.get(statsKey(), { played:0, wins:0, streak:0, best:0, dist:[0,0,0,0,0,0] });
+  const won = over && rows.length && rows[rows.length-1].w === target;
+  $("answerBox").innerHTML = over ? `<div class="answer"><div class="small">${won ? "Ты адгадаў слова" : "Загаданае слова"}</div><b>${target}</b><div>па-руску: ${WORDS[len][target]}</div></div>` : "";
+  $("statNums").innerHTML = [[st.played,"гульняў"],[st.played ? Math.round(st.wins*100/st.played) : 0,"% перамог"],[st.streak,"запар"],[st.best,"рэкорд"]]
+    .map(([v,t]) => `<div><b>${v}</b><span>${t}</span></div>`).join("");
+  const mx = Math.max(1, ...st.dist);
+  $("dist").innerHTML = st.dist.map((v,i) => `<div><span>${i+1}</span><i class="${won && rows.length===i+1 ? "cur":""}" style="width:${Math.max(8, v/mx*100)}%">${v}</i></div>`).join("");
+  const eb = $("endBtns"); eb.innerHTML = "";
+  if (over){
+    const sh = document.createElement("button"); sh.className = "btn ghost"; sh.textContent = "Скапіраваць вынік";
+    sh.onclick = share; eb.appendChild(sh);
+    if (mode === "free"){ const nx = document.createElement("button"); nx.className = "btn"; nx.textContent = "Новае слова";
+      nx.onclick = () => { store.set(gameKey, null); close(); start(); }; eb.appendChild(nx); }
+    else { const p = document.createElement("p"); p.className = "small"; p.style.textAlign = "center"; p.textContent = "Новае слова дня — заўтра. Паспрабуй іншую даўжыню або рэжым «Бясконца»."; eb.appendChild(p); }
+  }
+  $("stats").classList.add("open");
+}
+function share(){
+  const won = rows[rows.length-1].w === target;
+  const head = mode === "day" ? `Слоўка ${len} літар, ${new Date().toLocaleDateString("be-BY")}` : `Слоўка ${len} літар`;
+  const grid = rows.map(r => r.s.map(c => c === "g" ? "🟩" : c === "y" ? "🟨" : "⬜").join("")).join("\n");
+  const text = `${head} — ${won ? rows.length : "X"}/6\n${grid}`;
+  const done = () => toast("Скапіравана!");
+  const fallback = () => { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch(e) { toast("Не атрымалася скапіраваць"); } ta.remove(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+}
+function close(){ document.querySelectorAll(".modal").forEach(m => m.classList.remove("open")); }
+document.querySelectorAll("[data-close]").forEach(b => b.onclick = close);
+document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => { if (e.target === m) close(); }));
+$("helpBtn").onclick = () => $("help").classList.add("open");
+$("statsBtn").onclick = showStats;
+
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (document.querySelector(".modal.open")) { if (e.key === "Escape") close(); return; }
+  let k = e.key.toLowerCase(); k = MAP[k] || k;
+  if (k === "enter") { e.preventDefault(); press("ENTER"); }
+  else if (k === "backspace") { e.preventDefault(); press("⌫"); }
+  else if (k.length === 1 && ROWS.flat().includes(k)) press(k);
+});
+addEventListener("resize", () => { layout(); drawGrid(); });
+
+bar(); start();
+if (!store.get("seenHelp", false)) { $("help").classList.add("open"); store.set("seenHelp", true); }
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  try { navigator.serviceWorker.register("sw.js").catch(() => {}); } catch(e) {}
+}
+</script>
+</body>
+</html>

@@ -1,2 +1,20 @@
-# slouka
-Слоўка — беларускі вордл: адгадай слова за 6 спроб. Slouka — a Wordle-style word game in Belarusian. Guess the word in 6 tries.
+# Слоўка — беларускі вордл
+
+**Беларуская.** «Слоўка» — гэта гульня, у якой трэба адгадаць беларускае слова за шэсць спроб. Пасля кожнай спробы літары афарбоўваюцца: зялёная стаіць на сваім месцы, жоўтая ёсць у слове, але ў іншым месцы, а шэрай у слове няма. Можна выбраць даўжыню слова ад 4 да 7 літар і адзін з двух рэжымаў: «Слова дня», агульнае для ўсіх, ці «Бясконца». Пасля гульні паказваецца пераклад слова на рускую мову, ёсць статыстыка і кнопка, каб падзяліцца вынікам. Гульню можна ўсталяваць на тэлефон, і яна працуе без інтэрнэту.
+
+Мэта праекта — папулярызаваць беларускую мову праз простую і цікавую гульню.
+
+**English.** Slouka is a Wordle-style game in Belarusian: guess the word in six tries. After each guess the letters change color: green means the letter is in the right spot, yellow means it is in the word but in another spot, and grey means it is not in the word. Choose a word length from 4 to 7 letters and one of two modes, the daily word (the same for everyone) or endless play. After each game you see the Russian translation of the word, your statistics, and a button to share your result. The game can be installed on a phone and works offline.
+
+The project aims to make the Belarusian language more popular through a simple, fun game.
+
+## Як гуляць / How to play
+
+Адкрыйце сайт і пачынайце ўводзіць літары. На тэлефоне гульню можна дадаць на галоўны экран (Chrome: ⋮ → «Усталяваць праграму»; Safari: «Падзяліцца» → «На экран Дамоў»).
+
+Open the site and start typing. On a phone, add it to your home screen (Chrome: ⋮ → "Install app"; Safari: Share → "Add to Home Screen").
+
+## Файлы / Files
+
+- `index.html` — гульня і слоўнік / the game and its word list
+- `manifest.json`, `sw.js`, `icon-*.png` — усталёўка на тэлефон і праца без інтэрнэту / installation on a phone and offline mode

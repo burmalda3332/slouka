@@ -14,7 +14,14 @@ The project aims to make the Belarusian language more popular through a simple, 
 
 Open the site and start typing. On a phone, add it to your home screen (Chrome: ⋮ → "Install app"; Safari: Share → "Add to Home Screen").
 
+## Слоўнік / Dictionary
+
+Праверка слоў выкарыстоўвае беларускі слоўнік правапісу hunspell-be (© Мікалай Удодаў, 2010–2019), ліцэнзія CC BY-SA 3.0. Файл `slounik.txt` створаны з гэтага слоўніка і распаўсюджваецца на тых жа ўмовах.
+
+Word checking uses the Belarusian hunspell spelling dictionary hunspell-be (© Mikalai Udodau, 2010–2019), licensed under CC BY-SA 3.0. The file `slounik.txt` is derived from it and is shared under the same license.
+
 ## Файлы / Files
 
 - `index.html` — гульня і слоўнік / the game and its word list
+- `slounik.txt` — спіс формаў слоў для праверкі / word forms used to check guesses
 - `manifest.json`, `sw.js`, `icon-*.png` — усталёўка на тэлефон і праца без інтэрнэту / installation on a phone and offline mode
